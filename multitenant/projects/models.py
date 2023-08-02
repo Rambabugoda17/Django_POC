@@ -1,15 +1,19 @@
+from email.policy import default
 from django.db import models
 
-# Create your models here.
-from django.contrib.auth.models import AbstractUser
-
 
 # Create your models here.
-class User(AbstractUser):
-    name = models.CharField(max_length=255)
-    email = models.CharField(max_length=255, unique=True)
-    password = models.CharField(max_length=255)
-    username = None
+class Emp(models.Model):
+    name = models.CharField(max_length=200)
+    emp_id = models.CharField(max_length=200)
+    phone = models.CharField(max_length=10)
+    address = models.CharField(max_length=150)
+    working = models.BooleanField(default=True)
+    department = models.CharField(max_length=200)
 
-    USERNAME_FIELD = 'email'
-    REQUIRED_FIELDS = []
+    # class Meta:
+    #     # Specify the database alias to use
+    #     using = 'default'
+
+    def __str__(self):
+        return self.name

@@ -1,5 +1,6 @@
 from pathlib import Path
 import os
+import os
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -28,7 +29,8 @@ INSTALLED_APPS = [
     'organisation',  # new
     'crispy_forms',
     'rest_framework_swagger',
-    'projects'
+    'projects',
+    'drf_yasg',
 
 ]
 
@@ -42,10 +44,11 @@ MIDDLEWARE = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'organisation.middleware.OrganisationMiddleware',
+    'projects.middleware.ProjectsMiddleware',
 
     # new
 ]
-DATABASE_ROUTERS = ['organisation.router.OrganisationRouter']  # new
+DATABASE_ROUTERS = ['organisation.router.OrganisationRouter', 'projects.router.ProjectsRouter']  # new
 
 ROOT_URLCONF = 'multitenant.urls'
 
@@ -73,7 +76,7 @@ WSGI_APPLICATION = 'multitenant.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'te',
+        'NAME': 'test5',
         'USER': 'postgres',
         'PASSWORD': '123456789',
         'HOST': 'localhost',  # Replace with your database host
@@ -160,11 +163,43 @@ DEBUG_TOOLBAR_PANELS = [
 ]
 
 REST_FRAMEWORK = {
-    'DEFAULT_AUTHENTICATION_CLASSES': [
-        'rest_framework_simplejwt.authentication.JWTAuthentication',
-    ],
+    'DEFAULT_PAGINATION_CLASS':
+        'rest_framework.pagination.PageNumberPagination',
+    'PAGE_SIZE': 100,
+    'DEFAULT_SCHEMA_CLASS': 'rest_framework.schemas.coreapi.AutoSchema'
 }
 
 SIMPLE_JWT = {
     # JWT configuration options (optional)
+}
+
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'formatters': {
+        'simple': {
+            'format': '%(levelname)s %(message)s'
+        },
+    },
+    'handlers': {
+        'console': {
+            'level': 'DEBUG',
+            'class': 'logging.StreamHandler',
+            'formatter': 'simple'
+        },
+    },
+    'loggers': {
+        'django.request': {
+            'handlers': ['console'],
+            'level': 'DEBUG',
+        },
+        'core.handlers': {
+            'level': 'DEBUG',
+            'handlers': ['console']
+        },
+        'root': {
+            'level': 'DEBUG',
+            'handlers': ['console']
+        }
+    },
 }

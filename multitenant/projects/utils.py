@@ -12,4 +12,4 @@ def tenant_db_from_the_request(request):
 
 
 def get_tenants_map():
-    return {"babu.projects.local": "babu", "ram.projects.local": "ram"}
+    return {"babu.organisation.local": "babu", "ram.organisation.local": "ram"}

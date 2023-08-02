@@ -1,76 +1,69 @@
-from django.shortcuts import render
-
-# Create your views here.
-from rest_framework.views import APIView
-from rest_framework.response import Response
-from rest_framework.exceptions import AuthenticationFailed
-from .serializers import UserSerializer
-from .models import User
-import jwt, datetime
+from django.shortcuts import redirect, render
+from django.http import HttpResponse
+from .models import Emp
 
 
-# Create your views here.
-class RegisterView(APIView):
-    def post(self, request):
-        serializer = UserSerializer(data=request.data)
-        serializer.is_valid(raise_exception=True)
-        serializer.save()
-        return Response(serializer.data)
+def emp_home(request):
+    emps = Emp.objects.all()
+    return render(request, "home.html", {'emps': emps})
 
 
-class LoginView(APIView):
-    def post(self, request):
-        email = request.data['email']
-        password = request.data['password']
-
-        user = User.objects.filter(email=email).first()
-
-        if user is None:
-            raise AuthenticationFailed('User not found!')
-
-        if not user.check_password(password):
-            raise AuthenticationFailed('Incorrect password!')
-
-        payload = {
-            'id': user.id,
-            'exp': datetime.datetime.utcnow() + datetime.timedelta(minutes=60),
-            'iat': datetime.datetime.utcnow()
-        }
-
-        token = jwt.encode(payload, 'secret', algorithm='HS256').decode('utf-8')
-
-        response = Response()
-
-        response.set_cookie(key='jwt', value=token, httponly=True)
-        response.data = {
-            'jwt': token
-        }
-        return response
+def add_emp(request):
+    if request.method == "POST":
+        emp_name = request.POST.get("emp_name")
+        emp_id = request.POST.get("emp_id")
+        emp_phone = request.POST.get("emp_phone")
+        emp_address = request.POST.get("emp_address")
+        emp_working = request.POST.get("emp_working")
+        emp_department = request.POST.get("emp_department")
+        e = Emp()
+        e.name = emp_name
+        e.emp_id = emp_id
+        e.phone = emp_phone
+        e.address = emp_address
+        e.department = emp_department
+        if emp_working is None:
+            e.working = False
+        else:
+            e.working = True
+        e.save()
+        return redirect("/projects/home")
+    return render(request, "add-emp.html", {})
 
 
-class UserView(APIView):
-
-    def get(self, request):
-        token = request.COOKIES.get('jwt')
-
-        if not token:
-            raise AuthenticationFailed('Unauthenticated!')
-
-        try:
-            payload = jwt.decode(token, 'secret', algorithm=['HS256'])
-        except jwt.ExpiredSignatureError:
-            raise AuthenticationFailed('Unauthenticated!')
-
-        user = User.objects.filter(id=payload['id']).first()
-        serializer = UserSerializer(user)
-        return Response(serializer.data)
+def delete_emp(request, emp_id):
+    emp = Emp.objects.get(pk=emp_id)
+    emp.delete()
+    return redirect("/projects/emp_home")
 
 
-class LogoutView(APIView):
-    def post(self, request):
-        response = Response()
-        response.delete_cookie('jwt')
-        response.data = {
-            'message': 'success'
-        }
-        return response
+def update_emp(request, emp_id):
+    emp = Emp.objects.get(pk=emp_id)
+    print("Yes Bhai")
+    return render(request, "update_emp.html", {
+        'emp': emp
+    })
+
+
+def do_update_emp(request, emp_id):
+    if request.method == "POST":
+        emp_name = request.POST.get("emp_name")
+        emp_id_temp = request.POST.get("emp_id")
+        emp_phone = request.POST.get("emp_phone")
+        emp_address = request.POST.get("emp_address")
+        emp_working = request.POST.get("emp_working")
+        emp_department = request.POST.get("emp_department")
+
+        e = Emp.objects.get(pk=emp_id)
+
+        e.name = emp_name
+        e.emp_id = emp_id_temp
+        e.phone = emp_phone
+        e.address = emp_address
+        e.department = emp_department
+        if emp_working is None:
+            e.working = False
+        else:
+            e.working = True
+        e.save()
+    return redirect("/projects/home")
