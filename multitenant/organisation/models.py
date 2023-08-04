@@ -39,6 +39,7 @@ class Employee(AbstractBaseUser, PermissionsMixin):
     username = models.CharField(max_length=30, blank=True, null=True)
     is_active = models.BooleanField(default=True)
     profile_pic = models.ImageField(null=True)
+    is_staff = models.BooleanField(default=True)
 
     objects = EmployeeManager()
 

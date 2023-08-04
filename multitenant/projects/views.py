@@ -32,13 +32,13 @@ def add_emp(request):
 
 
 def delete_emp(request, emp_id):
-    emp = Emp.objects.get(pk=emp_id)
+    emp = Emp.objects.get()
     emp.delete()
-    return redirect("/projects/emp_home")
+    return redirect("/projects/home")
 
 
 def update_emp(request, emp_id):
-    emp = Emp.objects.get(pk=emp_id)
+    emp = Emp.objects.get()
     print("Yes Bhai")
     return render(request, "update_emp.html", {
         'emp': emp
@@ -54,7 +54,7 @@ def do_update_emp(request, emp_id):
         emp_working = request.POST.get("emp_working")
         emp_department = request.POST.get("emp_department")
 
-        e = Emp.objects.get(pk=emp_id)
+        e = Emp.objects.get()
 
         e.name = emp_name
         e.emp_id = emp_id_temp

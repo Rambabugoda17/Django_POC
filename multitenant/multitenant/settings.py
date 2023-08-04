@@ -26,11 +26,13 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'debug_toolbar',
-    'organisation',  # new
+
     'crispy_forms',
-    'rest_framework_swagger',
-    'projects',
+
+    # 'rest_framework_swagger',
     'drf_yasg',
+    'organisation',  # new
+    'projects',
 
 ]
 
@@ -166,7 +168,8 @@ REST_FRAMEWORK = {
     'DEFAULT_PAGINATION_CLASS':
         'rest_framework.pagination.PageNumberPagination',
     'PAGE_SIZE': 100,
-    'DEFAULT_SCHEMA_CLASS': 'rest_framework.schemas.coreapi.AutoSchema'
+    'DEFAULT_SCHEMA_CLASS': 'rest_framework.schemas.coreapi.AutoSchema',
+
 }
 
 SIMPLE_JWT = {
