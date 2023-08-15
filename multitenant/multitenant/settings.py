@@ -213,3 +213,21 @@ LOGGING = {
         }
     },
 }
+
+
+# Celery - prefix with CELERY_
+CELERY_BROKER_URL = "redis://localhost:6379"
+CELERY_RESULT_BACKEND = CELERY_BROKER_URL
+CELERY_ACCEPT_CONTENT = ["json"]
+CELERY_TASK_SERIALIZER = "json"
+CELERY_TASK_TRACK_STARTED = True
+
+# Email
+EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
+EMAIL_HOST = ""  # add your own settings here
+EMAIL_PORT = ""  # add your own settings here
+EMAIL_HOST_USER = ""  # add your own settings here
+EMAIL_HOST_PASSWORD = ""  # add your own settings here
+EMAIL_USE_TLS = True  # add your own settings here
+DEFAULT_FROM_EMAIL = "you@example.com"  # your email address
+
