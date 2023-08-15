@@ -9,6 +9,8 @@ from django.views.generic import DetailView
 from rest_framework.generics import ListAPIView
 from rest_framework.pagination import PageNumberPagination
 from rest_framework.response import Response
+from rest_framework.throttling import AnonRateThrottle, UserRateThrottle
+
 
 from .dto import CustomResponse, CustomResponseSerializer
 from .models import Employee
@@ -74,7 +76,6 @@ def logout_request(request):
 #         p_form = NewUserForm(request.POST,
 #                              request.FILES,
 #                              instance=request.user.profile)
-#
 #         if p_form.is_valid():
 #             p_form = Employee.objects.all()
 #             p_form.save()
@@ -89,9 +90,7 @@ def logout_request(request):
 #         'projects': list(proj)
 #
 #     }
-
 # return render(request, 'profile.html', context)
-
 
 #
 class ProfileView(LoginRequiredMixin, View):
@@ -138,5 +137,6 @@ class ProjectsListAPIView(ListAPIView):
         data = Projects.objects.all()
         serializer = ProjectsSerializer(data, many=True)
         response = CustomResponse(serializer.data)
+        throttle_classes = [AnonRateThrottle, UserRateThrottle]
         # response_serializer = CustomResponseSerializer(response)
         return Response(data=response.data)
