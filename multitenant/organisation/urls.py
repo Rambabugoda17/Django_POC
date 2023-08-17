@@ -5,7 +5,7 @@ from . import views
 from .views import ProfileView
 
 urlpatterns = [
-    path('', views.get_Employees, name="index"),
+    path('', views.get_employees, name="index"),
     path("register", views.register_request, name="register"),
     path("login", views.login_request, name="login"),
     path("profile", ProfileView.as_view(), name="profile"),

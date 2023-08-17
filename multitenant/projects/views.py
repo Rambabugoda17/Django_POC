@@ -113,3 +113,4 @@ class SendMailView(FormView):
         send_email_task.delay(
             email, subject, message,
         )
+

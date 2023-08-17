@@ -11,8 +11,8 @@ from rest_framework.pagination import PageNumberPagination
 from rest_framework.response import Response
 from rest_framework.throttling import AnonRateThrottle, UserRateThrottle
 
-
 from .dto import CustomResponse, CustomResponseSerializer
+from .exceptions import AuthorizationException, InvalidEmailException
 from .models import Employee
 
 from .forms import NewUserForm
@@ -22,7 +22,7 @@ from .serializers import EmployeeSerializer, ProjectsSerializer
 
 # Create your views here.
 
-def get_Employees(request):
+def get_employees(request):
     employees = Employee.objects.all()
     context = {
         'employees': employees
@@ -32,32 +32,43 @@ def get_Employees(request):
 
 def register_request(request):
     if request.method == "POST":
-        form = NewUserForm(request.POST, request.FILES)
-        if form.is_valid():
-            user = form.save()
-            login(request, user)
-            messages.success(request, "Registration successful.")
-            return redirect("login")
-        messages.error(request, "Unsuccessful registration. Invalid information.")
+        try:
+            form = NewUserForm(request.POST, request.FILES)
+            if form.is_valid():
+                email = form.cleaned_data.get("email")
+                if not email.endswith("@gmail.com"):
+                    raise InvalidEmailException()
+                user = form.save()
+                login(request, user)
+                messages.success(request, "Registration successful.")
+                return redirect("login")
+            messages.error(request, "Unsuccessful registration. Invalid information.")
+        except Exception as e:
+            messages.error(request, e)
     form = NewUserForm()
     return render(request=request, template_name="register.html", context={"register_form": form})
 
 
 def login_request(request):
     if request.method == "POST":
-        form = AuthenticationForm(request, data=request.POST)
-        if form.is_valid():
-            username = form.cleaned_data.get('username')
-            password = form.cleaned_data.get('password')
-            user = authenticate(username=username, password=password)
-            if user is not None:
-                login(request, user)
-                messages.info(request, f"You are now logged in as {username}.")
-                return redirect("profile")
+        try:
+            form = AuthenticationForm(request, data=request.POST)
+            if form.is_valid():
+                username = form.cleaned_data.get('username')
+                password = form.cleaned_data.get('password')
+                user = authenticate(username=username, password=password)
+                if user is not None:
+                    login(request, user)
+                    messages.info(request, f"You are now logged in as {username}.")
+                    return redirect("profile")
+                else:
+                    raise AuthorizationException("Invalid username or password.")
+                    # messages.error(request, "Invalid username or password.")
             else:
-                messages.error(request, "Invalid username or password.")
-        else:
-            messages.error(request, "Invalid username or password.")
+                raise AuthorizationException("Invalid username or password.")
+                # messages.error(request, "Invalid username or password.")
+        except AuthorizationException as e:
+            messages.error(request, e)
     form = AuthenticationForm()
     return render(request=request, template_name="login.html", context={"login_form": form})
 
